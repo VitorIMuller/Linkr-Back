@@ -1,12 +1,16 @@
-import express from "express";
+import express, { json } from "express";
 import cors from 'cors'
 import dotenv from 'dotenv'
-dotenv.config();
 import router from "./Routers/index.js";
 
-const server = express()
-server.use(cors());
-server.use(express.json());
-server.use(router)
+dotenv.config();
 
-server.listen(process.env.PORT, console.log(`Rodando em: ${process.env.PORT}`))
+const app = express()
+
+app.use(cors());
+app.use(json());
+app.use(router)
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, console.log(`Rodando em: ${PORT}`))
