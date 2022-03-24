@@ -6,12 +6,12 @@ export async function verifyEmail(email) {
     `, [email])
 }
 
-export async function createUser({username, email, image}, passwordHash) {
+export async function createUser({name, email, image}, passwordHash) {
     return await connection.query(`
         INSERT INTO
-            users(username, email, password, image)
+            users(name, email, password, image)
         VALUES ($1, $2, $3, $4)
-    `, [username, email, passwordHash, image]);
+    `, [name, email, passwordHash, image]);
 }
 
 export async function createSession(user, token) {
