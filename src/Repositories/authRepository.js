@@ -6,7 +6,11 @@ export async function verifyEmail(email) {
     `, [email])
 }
 
+<<<<<<< HEAD
+export async function createUser({ name, email, image }, passwordHash) {
+=======
 export async function createUser({name, email, image}, passwordHash) {
+>>>>>>> 9e67f5d2d4a5eee8e4e5a22662d043ef585ae9f1
     return await connection.query(`
         INSERT INTO
             users(name, email, password, image)

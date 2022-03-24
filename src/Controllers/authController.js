@@ -28,15 +28,30 @@ export async function signIn(req, res) {
 
   try {
     const { rows: [user] } = await verifyEmail(email);
+
+
+
     if (!user) {
       return res.sendStatus(404);
     }
+
+
+
     if (bcrypt.compareSync(password, user.password)) {
+      console.log("1")
+
+
       const token = uuid();
+      console.log("2")
       await createSession(user, token);
+      console.log("3")
       delete user.password;
+      console.log({ ...user, token })
       return res.status(200).send({ ...user, token });
+
     }
+
+
 
     return res.sendStatus(404);
   } catch (error) {
