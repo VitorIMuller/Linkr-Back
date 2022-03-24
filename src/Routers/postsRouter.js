@@ -1,12 +1,14 @@
-import { Router } from "express";
-import { listPosts } from "../Controllers/postsController.js";
+import express from "express";
+import { createPosts, listPosts } from "../Controllers/postsController.js";
+import { validateTokenMiddleware } from "../Middlewares/validateTokenMiddleware.js"
 import validateSchemaMiddleware from "../Middlewares/validateSchemaMiddleware.js";
-import validateTokenMiddleware from "../Middlewares/validateTokenMiddleware.js";
 import postSchema from "../Schemas/postSchema.js";
 
-const postsRouter = Router();
+const postsRouter = express.Router();
 
-postsRouter.post("/posts", $1, validateSchemaMiddleware(postSchema), $2) //só adicionar validateTokenMiddleware em $1 e função_cria_post em $2, Damon
+postsRouter.use(validateTokenMiddleware);
+
+postsRouter.post('/posts', validateSchemaMiddleware(postSchema), createPosts);
 postsRouter.get("/posts", listPosts);
 
 export default postsRouter;

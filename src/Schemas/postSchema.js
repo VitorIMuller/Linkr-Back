@@ -1,8 +1,8 @@
 import joi from "joi";
 
-const postSchema = joi.string({
-    link: joi.string().uri().required(),
-    message: joi.string().required(),
+const postSchema = joi.object({
+    url: joi.string().uri().required(),
+    userMessage: joi.string().required(),
 });
 
 export default postSchema;

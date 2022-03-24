@@ -9,8 +9,6 @@ export async function signIn(req, res) {
         console.log(email)
         const user = await connection.query(`SELECT * FROM users WHERE email=$1`, [email])
         if (user.rowCount === 0) return res.status(404).send("Email ou Senha não existem!")
-        console.log("ok")
-
         const username = user.name
         if (bcrypt.compareSync(password, user.password)) {
             const token = uuid();

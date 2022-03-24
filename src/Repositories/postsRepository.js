@@ -1,4 +1,4 @@
-import connection from "../database";
+import connection from "../database.js";
 
 async function allPosts(limit) {
     return connection.query(`
