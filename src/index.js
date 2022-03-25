@@ -13,4 +13,4 @@ app.use(router)
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(4000, () => console.log(`Rodando em: ${4000}`))
+app.listen(PORT, () => console.log(`Rodando em: ${4000}`))
