@@ -17,7 +17,7 @@ async function publishPost(userId, userMessage, url, urlTitle, urlDescription, u
     return connection.query(`   
     INSERT INTO
         posts ("userId", "userMessage", url, "urlTitle", "urlDescription", "urlImage")
-    VALUES ($1, $2, $3, $4, $5, $6)
+    VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
     `, [userId, userMessage, url, urlTitle, urlDescription, urlImage]);
 }
 
@@ -33,6 +33,28 @@ async function postsByUserId(userId) {
     `, [userId]);
 }
 
+async function verifyExistingTag(hashtag) {
+    return connection.query(`
+        SELECT * FROM hashtags WHERE tag=$1
+    `, [hashtag]);
+}
+
+async function insertHashtags(tag) {
+    return connection.query(`
+        INSERT INTO
+            hashtags (tag)
+        VALUES ($1) RETURNING id
+    `, [tag]);
+}
+
+async function matchHashToPost(postId, hashtagId) {
+    return connection.query(`
+        INSERT INTO
+            hashtagpost ("postId", "hashtagId")
+        VALUES ($1, $2)
+    `, [parseInt(postId), parseInt(hashtagId)]);
+}
+
 async function getPostsByHashtag(hashtag) {
     return connection.query(`
         SELECT 
@@ -45,4 +67,4 @@ async function getPostsByHashtag(hashtag) {
     `, [hashtag]);
 }
 
-export const postsRepository = { allPosts, publishPost, postsByUserId, getPostsByHashtag }
+export const postsRepository = { allPosts, publishPost, postsByUserId, getPostsByHashtag, verifyExistingTag , insertHashtags, matchHashToPost }
