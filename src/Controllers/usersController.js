@@ -2,8 +2,6 @@ import { listUser } from "../Repositories/usersRepository.js"
 
 export async function getUser(req, res) {
     const { userId } = req.body;
-    console.log(userId)
-
     try {
         const result = await listUser(userId);
 
