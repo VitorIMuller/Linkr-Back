@@ -25,4 +25,28 @@ async function publishPost(userId, userMessage, url, urlTitle, urlDescription, u
     `, [userId, userMessage, url, urlTitle, urlDescription, urlImage]);
 }
 
-export const postsRepository = { allPosts, publishPost }
+async function postsByUserId(userId) {
+    return connection.query(`
+        SELECT 
+            p.*,
+            u.name AS username,
+            u.image AS "profilePic",
+        FROM posts p
+            LEFT JOIN users u ON p."userId" = $1
+            ORDER BY p.time DESC
+    `, [userId]);
+}
+
+async function getPostsByHashtag(hashtag) {
+    return connection.query(`
+        SELECT 
+            p.*,
+            u.name AS username,
+            u.image AS "profilePic",
+        FROM posts p
+            LEFT JOIN users u ON p."userId" = $1
+            ORDER BY p.time DESC
+    `, [hashtag]);
+}
+
+export const postsRepository = { allPosts, publishPost, postsByUserId, getPostsByHashtag }
