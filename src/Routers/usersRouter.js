@@ -4,8 +4,8 @@ import { validateTokenMiddleware } from "../Middlewares/validateTokenMiddleware.
 const usersRouter = express.Router();
 
 
-usersRouter.use(validateTokenMiddleware)
 
-usersRouter.get("/user", getUser);
+
+usersRouter.get("/user", validateTokenMiddleware, getUser);
 
 export default usersRouter;
