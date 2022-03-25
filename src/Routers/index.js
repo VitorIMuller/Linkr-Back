@@ -7,6 +7,6 @@ const router = Router();
 
 router.use(authRouter);
 router.use(postsRouter);
-router.use(usersRouter)
+router.use(usersRouter);
 
 export default router;
