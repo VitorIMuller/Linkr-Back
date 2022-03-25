@@ -1,6 +1,6 @@
 import { postsRepository } from "../Repositories/postsRepository.js";
 import postsRouter from "../Routers/postsRouter.js";
-// import urlMetadata from "url-metadata";
+import urlMetadata from "url-metadata";
 
 export async function listPosts(req, res) {
     const { limit } = req.params;
@@ -42,8 +42,6 @@ export async function createPosts(req, res) {
 
 export async function listPostByUserId(req, res) {
     const { userId } = req.params;
-    console.log(userId)
-
     try {
         const result = await postsRepository.postsByUserId(userId);
 
@@ -57,3 +55,20 @@ export async function listPostByUserId(req, res) {
         res.status(500).send(error);
     }
 }
+
+export async function listPostByHashtag(req, res) {
+    const { hashtag } = req.params;
+    try {
+        const result = await postsRepository.getPostsByHashtag(hashtag);
+
+        if (result.rowCount === 0) {
+            return res.sendStatus(404);
+        }
+
+        res.status(200).send(result.rows);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+}
+
