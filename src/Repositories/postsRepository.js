@@ -26,7 +26,7 @@ async function postsByUserId(userId) {
         SELECT 
             p.*,
             u.name AS username,
-            u.image AS "profilePic",
+            u.image AS "profilePic"
         FROM posts p
             LEFT JOIN users u ON p."userId" = $1
             ORDER BY p.time DESC
