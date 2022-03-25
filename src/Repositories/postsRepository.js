@@ -50,9 +50,9 @@ async function insertHashtags(tag) {
 async function matchHashToPost(postId, hashtagId) {
     return connection.query(`
         INSERT INTO
-            hashtagPost ("postId", "hashtagId")
+            hashtagpost ("postId", "hashtagId")
         VALUES ($1, $2)
-    `, [postId, hashtagId]);
+    `, [parseInt(postId), parseInt(hashtagId)]);
 }
 
 async function getPostsByHashtag(hashtag) {
