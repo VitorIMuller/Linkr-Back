@@ -21,4 +21,17 @@ async function publishPost(userId, userMessage, url, urlTitle, urlDescription, u
     `, [userId, userMessage, url, urlTitle, urlDescription, urlImage]);
 }
 
-export const postsRepository = { allPosts, publishPost }
+async function postsByUserId(userId) {
+    return connection.query(`
+        SELECT 
+            p.*,
+            u.name,
+            u.image AS "profilePic"
+        FROM posts p
+            JOIN users u ON p."userId" = u.id
+            WHERE "userId"=$1
+            ORDER BY p.time DESC
+    `, [userId]);
+}
+
+export const postsRepository = { allPosts, publishPost, postsByUserId }
