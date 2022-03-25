@@ -59,6 +59,7 @@ export async function createPosts(req, res) {
 
 export async function listPostByUserId(req, res) {
     const { userId } = req.params;
+    
     try {
         const result = await postsRepository.postsByUserId(userId);
 
