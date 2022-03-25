@@ -1,6 +1,5 @@
 import { postsRepository } from "../Repositories/postsRepository.js";
-import connection from '../database.js';
-//import urlMetadata from "url-metadata";
+import urlMetadata from "url-metadata";
 
 export async function listPosts(req, res) {
     const { limit } = req.params;
@@ -20,15 +19,19 @@ export async function listPosts(req, res) {
 }
 
 export async function createPosts(req, res) {
-
-    const { link, description } = req.body;
+    const { url, userMessage } = req.body;
     const user = res.locals.user;
+    const userId = user.id;
 
     try {
-        await connection.query(`
-            INSERT INTO posts("userId", "userMessage", timestamp, url, urlTitle, urlDescription, urlImage)
-                VALUES ($1, $2, $3)
-        `, [user.id, link, description]);
+        const metadata = await urlMetadata(url);
+
+        const urlTitle = metadata?.title;
+        const urlDescription = metadata?.description;
+        const urlImage = metadata?.image;
+
+        await postsRepository.publishPost(userId, userMessage, url, urlTitle, urlDescription, urlImage);
+
         res.sendStatus(201);
     }
     catch (error) {

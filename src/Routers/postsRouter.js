@@ -8,7 +8,7 @@ const postsRouter = express.Router();
 
 postsRouter.use(validateTokenMiddleware);
 
-postsRouter.post('/posts', validateSchemaMiddleware(postSchema), createPosts);
-postsRouter.get("/posts", listPosts);
+postsRouter.post("/posts", validateSchemaMiddleware(postSchema), createPosts);
+postsRouter.get("/posts/:limit", listPosts);
 
 export default postsRouter;
