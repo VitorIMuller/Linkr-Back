@@ -28,8 +28,7 @@ async function postsByUserId(userId) {
             u.name AS username,
             u.image AS "profilePic",
         FROM posts p
-            JOIN users u ON p."userId" = u.id
-            WHERE "userId"=$1
+            LEFT JOIN users u ON p."userId" = $1
             ORDER BY p.time DESC
     `, [userId]);
 }
@@ -56,4 +55,16 @@ async function matchHashToPost(postId, hashtagId) {
     `, [postId, hashtagId]);
 }
 
-export const postsRepository = { allPosts, publishPost, postsByUserId, verifyExistingTag , insertHashtags, matchHashToPost }
+async function getPostsByHashtag(hashtag) {
+    return connection.query(`
+        SELECT 
+            p.*,
+            u.name AS username,
+            u.image AS "profilePic",
+        FROM posts p
+            LEFT JOIN users u ON p."userId" = $1
+            ORDER BY p.time DESC
+    `, [hashtag]);
+}
+
+export const postsRepository = { allPosts, publishPost, postsByUserId, getPostsByHashtag, verifyExistingTag , insertHashtags, matchHashToPost }
