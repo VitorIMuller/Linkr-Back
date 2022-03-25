@@ -25,8 +25,8 @@ async function postsByUserId(userId) {
     return connection.query(`
         SELECT 
             p.*,
-            u.name,
-            u.image AS "profilePic"
+            u.name AS username,
+            u.image AS "profilePic",
         FROM posts p
             JOIN users u ON p."userId" = u.id
             WHERE "userId"=$1
