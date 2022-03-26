@@ -1,4 +1,4 @@
-import { trending } from "../Repositories/trendingRepository";
+import { trending } from "../Repositories/trendingRepository.js";
 
 export async function getTrending(req, res) {
   const { limit } = req.params;
