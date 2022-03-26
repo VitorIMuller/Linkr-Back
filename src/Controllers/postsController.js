@@ -90,3 +90,40 @@ export async function listPostByHashtag(req, res) {
     }
 }
 
+async function addHashtag (userMessage, postId){
+    const pattern = /(^|\B)#(?![0-9_]+\b)([a-zA-Z0-9_]{1,30})(\b|\r)/g;
+    const words = userMessage.split(' ');
+    const filteredHastags = words.filter( word => pattern.test(word ) );
+    const hashtags = filteredHastags.map( tag => tag.split('#')[1] );
+
+    hashtags.map(async tag => {
+        const { rows: [hashtag] } = await postsRepository.verifyExistingTag(tag);
+        
+        if (!hashtag) {
+            const { rows: [insertion]} = await postsRepository.insertHashtags(tag);
+            await postsRepository.matchHashToPost(postId, insertion.id);
+        } else {
+            await postsRepository.matchHashToPost(postId, hashtag.id);
+        }
+    })
+
+}
+
+export async function editPost(req,res){
+    const {postId} = req.params;
+    const {url, userMessage} = req.body;
+    const {id: userId} = res.locals.user;
+    
+    try {
+        const {rows: data } = await postsRepository.searchUserId(postId);        
+        if ( data[0].userId !== userId) return res.sendStatus(401);
+
+        const result = await postsRepository.editPost(postId, userId, userMessage);
+        addHashtag(userMessage,postId);   
+        res.status(200).send(result);
+        
+    }catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+}
