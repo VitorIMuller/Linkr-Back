@@ -3,7 +3,7 @@ import connection from "../database.js";
 async function insertLike(userId, postId) {
     return connection.query(`
         INSERT  INTO
-            likes ("userId", "postId")
+            likes ("userId", "postsId")
         VALUES 
             ($1, $2)
     `, [userId, postId]);
@@ -15,18 +15,18 @@ async function deleteLike(userId, postId) {
             likes
         WHERE 
             "userId" = $1
-            AND "postId" = $2
-    ` [userId, postId]);
+            AND "postsId" = $2
+    `, [userId, postId]);
 }
 
 async function getPostTotalLikes(postId) {
     return connection.query(`
         SELECT
-            COUNT(DISTINC "userId") AS total
+            COUNT(DISTINCT "userId") AS total
         FROM
             likes
         WHERE
-            "postId" = $1
+            "postsId" = $1
     `, [postId]);
 }
 
@@ -38,7 +38,7 @@ async function getUserLikes(userId, postId) {
             likes
         WHERE
             "userId" = $1
-            AND "postId" = $2
+            AND "postsId" = $2
     `, [userId, postId]);
 }
 

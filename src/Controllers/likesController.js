@@ -1,5 +1,5 @@
-import { verifyId } from "../Repositories/authRepository";
-import { likeRepository } from "../Repositories/likeRepository";
+import { verifyId } from "../Repositories/authRepository.js";
+import { likeRepository } from "../Repositories/likeRepository.js";
 
 export async function toggleLike(req, res) {
     const { like, postId } = req.body;
@@ -14,9 +14,9 @@ export async function toggleLike(req, res) {
         }
 
         if (!like) {
-            await likeRepository.insertLike(user.id, postId);
+            await likeRepository.insertLike(user.rows[0].id, postId);
         } else {
-            await likeRepository.deleteLike(user.id, postId);
+            await likeRepository.deleteLike(user.rows[0].id, postId);
         }
 
         return res.status(200).send(!like);

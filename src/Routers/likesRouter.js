@@ -1,10 +1,13 @@
 import { Router } from "express";
-import { toggleLike, getTotalLikes, getLikes } from "../Controllers/likesController";
+import { toggleLike, getTotalLikes, getLikes } from "../Controllers/likesController.js";
+import { validateTokenMiddleware } from "../Middlewares/validateTokenMiddleware.js";
 
-const likeRouter = Router();
+const likesRouter = Router();
 
-likeRouter.post("/like/toggle", toggleLike);
-likeRouter.get("/like/:postId/total", getTotalLikes);
-likeRouter.get("/like/:postId", getLikes);
+likesRouter.use(validateTokenMiddleware);
 
-export default likeRouter;
+likesRouter.post("/likes/toggle", toggleLike);
+likesRouter.get("/likes/:postId/total", getTotalLikes);
+likesRouter.get("/likes/:postId", getLikes);
+
+export default likesRouter;
