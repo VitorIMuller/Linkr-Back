@@ -1,5 +1,4 @@
 import { postsRepository } from "../Repositories/postsRepository.js";
-import postsRouter from "../Routers/postsRouter.js";
 import urlMetadata from "url-metadata";
 
 export async function listPosts(req, res) {

@@ -6,10 +6,13 @@ async function allPosts(limit) {
             p.*,
             u.name,
             u.image AS "profilePic"
-        FROM posts p
-            LEFT JOIN users u ON u.id = p."userId"
-        ORDER BY p.time DESC
-        LIMIT $1
+        FROM 
+            posts p
+        LEFT JOIN
+            users u
+                ON u.id = p."userId"
+        ORDER BY
+            p.time DESC LIMIT $1
     `, [limit]);
 }
 
@@ -27,10 +30,12 @@ async function postsByUserId(userId) {
             p.*,
             u.name AS username,
             u.image AS "profilePic"
-        FROM posts p
-            LEFT JOIN users u ON p."userId" =u.id
-            WHERE "userId"=$1
-            ORDER BY p.time DESC
+        FROM 
+            posts p
+        LEFT JOIN users u
+            ON p."userId" = $1
+        ORDER BY
+            p.time DESC
     `, [userId]);
 }
 
@@ -56,6 +61,7 @@ async function matchHashToPost(postId, hashtagId) {
     `, [parseInt(postId), parseInt(hashtagId)]);
 }
 
+<<<<<<< HEAD
 async function getPostsByTag(hashtag) {
     const { rows: posts } = await connection.query(`
     SELECT users.id AS "userId", users.name, users.image, posts.*
@@ -75,3 +81,21 @@ async function getPostsByTag(hashtag) {
 
 
 export const postsRepository = { allPosts, publishPost, postsByUserId, verifyExistingTag, insertHashtags, matchHashToPost, getPostsByTag }
+=======
+async function getPostsByHashtag(hashtag) {
+    return connection.query(`
+        SELECT 
+            p.*,
+            u.name AS username,
+            u.image AS "profilePic"
+        FROM
+            posts p
+        LEFT JOIN
+            users u ON p."userId" = $1
+        ORDER BY
+            p.time DESC
+    `, [hashtag]);
+}
+
+export const postsRepository = { allPosts, publishPost, postsByUserId, getPostsByHashtag, verifyExistingTag, insertHashtags, matchHashToPost }
+>>>>>>> f35b58017f20615300a98a0daeedf2fea44361be
