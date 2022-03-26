@@ -67,4 +67,31 @@ async function getPostsByHashtag(hashtag) {
     `, [hashtag]);
 }
 
-export const postsRepository = { allPosts, publishPost, postsByUserId, getPostsByHashtag, verifyExistingTag , insertHashtags, matchHashToPost }
+async function editPost( postId ,userId, userMessage) {
+    return connection.query(`   
+    UPDATE posts
+	    SET  "userMessage"=$1 
+	    WHERE posts.id = $2 AND "userId"=$3
+    `, [ userMessage, postId, userId]);
+}
+
+async function searchUserId(postId) {
+    return connection.query(`   
+    SELECT 
+	    posts."userId"
+    FROM posts
+	    WHERE posts.id=$1
+    `, [postId]);
+}
+
+export const postsRepository = { 
+    allPosts, 
+    publishPost, 
+    postsByUserId, 
+    getPostsByHashtag, 
+    verifyExistingTag , 
+    insertHashtags, 
+    matchHashToPost,
+    editPost,
+    searchUserId
+}
