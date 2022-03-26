@@ -11,6 +11,6 @@ postsRouter.use(validateTokenMiddleware);
 postsRouter.post("/posts", validateSchemaMiddleware(postSchema), createPosts);
 postsRouter.get("/posts/:limit", listPosts);
 postsRouter.get("/user/:userId", listPostByUserId);
-postsRouter.get("/posts/:hashtag", listPostByHashtag)
+postsRouter.get("/post/:hashtag", listPostByHashtag);
 
 export default postsRouter;
