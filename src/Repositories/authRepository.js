@@ -2,8 +2,14 @@ import connection from "../database.js"
 
 export async function verifyEmail(email) {
     return await connection.query(`
-        SELECT * FROM users WHERE email=$1
+        SELECT * FROM users WHERE email = $1
     `, [email])
+}
+
+export async function verifyId(id) {
+    return connection.query(`
+        SELECT * FROM users WHERE id = $1
+    `, [id]);
 }
 
 export async function createUser({ name, email, image }, passwordHash) {
