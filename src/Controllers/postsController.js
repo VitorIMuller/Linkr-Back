@@ -83,7 +83,6 @@ export async function listPostByHashtag(req, res) {
         }
         res.status(200).send(posts);
     } catch (error) {
-        console.log(hashtag)
         console.log(error);
         res.status(500).send(error);
     }
