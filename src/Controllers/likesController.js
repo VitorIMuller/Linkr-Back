@@ -30,15 +30,41 @@ export async function getTotalLikes(req, res) {
     const { postId } = req.params;
 
     try {
-        const post = await likeRepository.getPostTotalLikes(postId);
+        const likes = await likeRepository.getPostTotalLikes(postId);
 
-        if (post.rowCount === 0) {
+        if (likes.rowCount === 0) {
             return res.status(404).send("Post Not Found");
         }
 
-        const postTotalLikes = post.rows[0].total;
+        res.status(200).send(likes.rows[0].total);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
 
-        res.status(200).send(postTotalLikes);
+export async function getUsernamesLikes(req, res) {
+    const { postId } = req.params;
+    const userLocal = res.locals.user;
+
+    try {
+        const userLike = await likeRepository.getUserLikes(userLocal.id, postId);
+
+        let userLocalLike = false;
+
+        if (userLike.rowCount > 0) {
+            userLocalLike = true;
+        }
+
+        const { rows: usersLikes } = await likeRepository.getPostUsernameLikes(postId, userLocal?.id);
+
+        const { rows: like } = await likeRepository.getPostTotalLikes(postId);
+
+        const [likes] = like;
+
+        usersLikes.push({ ownUserLiked: userLocalLike, likes })
+
+        res.status(200).send(usersLikes)
     } catch (error) {
         console.log(error);
         return res.status(500).send(error);

@@ -96,6 +96,14 @@ async function searchUserId(postId) {
     `, [postId]);
 }
 
+async function searchUsersByName(characters){
+    return connection.query(`   
+    SELECT id, name, image
+    FROM users
+        WHERE name LIKE $1
+    `, [characters]);
+}
+
 export const postsRepository = { 
     allPosts, 
     publishPost, 
@@ -105,5 +113,6 @@ export const postsRepository = {
     insertHashtags, 
     matchHashToPost,
     editPost,
-    searchUserId
+    searchUserId,
+    searchUsersByName
 }

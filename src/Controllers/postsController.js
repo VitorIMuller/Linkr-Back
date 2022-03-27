@@ -83,7 +83,6 @@ export async function listPostByHashtag(req, res) {
         }
         res.status(200).send(posts);
     } catch (error) {
-        console.log(hashtag)
         console.log(error);
         res.status(500).send(error);
     }
@@ -124,5 +123,20 @@ export async function editPost(req,res){
     }catch (error) {
         console.log(error);
         res.status(500).send(error);
+    }
+}
+
+export async function searchUsers(req, res){
+    let {characters} = req.query;
+    const minCharacters = 3;
+
+    if (characters.length < minCharacters) return res.sendStatus(400);
+    characters += '%';
+    try {
+        const {rows: users} = await postsRepository.searchUsersByName(characters);       
+        res.status(200).send(users);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);    
     }
 }
