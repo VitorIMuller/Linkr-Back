@@ -1,7 +1,6 @@
 import connection from "../database.js";
 
 export async function validateTokenMiddleware(req, res, next) {
-
   const authorization = req.headers.authorization;
   const token = authorization?.replace("Bearer ", "");
   if (!token) {
@@ -18,6 +17,5 @@ export async function validateTokenMiddleware(req, res, next) {
     return res.sendStatus(401);
   }
   res.locals.user = user;
-
   next();
 }

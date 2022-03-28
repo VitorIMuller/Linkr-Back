@@ -33,7 +33,8 @@ async function postsByUserId(userId) {
         FROM 
             posts p
         LEFT JOIN users u
-            ON p."userId" = $1
+            ON p."userId" = u.id
+        WHERE "userId"=$1
         ORDER BY
             p.time DESC
     `, [userId]);

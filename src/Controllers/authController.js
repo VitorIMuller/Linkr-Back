@@ -4,10 +4,8 @@ import { createSession, createUser, verifyEmail } from '../Repositories/authRepo
 
 export async function signUp(req, res) {
   const user = req.body;
-
   try {
-    const { rows: [existingEmail] } = await verifyEmail(user.email);
-
+    const { rows: [existingEmail] } = await verifyEmail(user.email)
     if (existingEmail) {
       return res.sendStatus(409);
     }
