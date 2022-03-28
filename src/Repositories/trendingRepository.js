@@ -11,3 +11,17 @@ export async function trending(limit) {
     LIMIT $1
   `, [limit]);
 }
+
+async function deletePostHash(postId) {
+  return connection.query(`
+        DELETE
+        FROM
+            hashtagpost
+        WHERE
+            "postId" = $1
+    `, [postId]);
+}
+
+export const hashtagRepository = {
+  deletePostHash
+};
