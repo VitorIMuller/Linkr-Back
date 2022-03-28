@@ -77,14 +77,12 @@ async function getPostsByTag(hashtag) {
     return posts
 };
 
-
-
-async function editPost( postId ,userId, userMessage) {
+async function editPost(postId, userId, userMessage) {
     return connection.query(`   
     UPDATE posts
 	    SET  "userMessage"=$1 
 	    WHERE posts.id = $2 AND "userId"=$3
-    `, [ userMessage, postId, userId]);
+    `, [userMessage, postId, userId]);
 }
 
 async function searchUserId(postId) {
@@ -96,14 +94,25 @@ async function searchUserId(postId) {
     `, [postId]);
 }
 
-export const postsRepository = { 
-    allPosts, 
-    publishPost, 
-    postsByUserId, 
-    getPostsByTag, 
-    verifyExistingTag , 
-    insertHashtags, 
+async function deletePost(postId) {
+    return connection.query(`
+        DELETE
+        FROM
+            posts
+        WHERE
+            id = $1
+    `, [postId]);
+}
+
+export const postsRepository = {
+    allPosts,
+    publishPost,
+    postsByUserId,
+    getPostsByTag,
+    verifyExistingTag,
+    insertHashtags,
     matchHashToPost,
     editPost,
-    searchUserId
+    searchUserId,
+    deletePost
 }
