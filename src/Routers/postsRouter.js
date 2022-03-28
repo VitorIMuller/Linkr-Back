@@ -1,5 +1,5 @@
 import express from "express";
-import { createPosts, deletePost, editPost, listPostByHashtag, listPostByUserId, listPosts } from "../Controllers/postsController.js";
+import { createPosts, deletePost, editPost, listPostByHashtag, listPostByUserId, listPosts, searchUsers } from "../Controllers/postsController.js";
 import { validateTokenMiddleware } from "../Middlewares/validateTokenMiddleware.js"
 import validateSchemaMiddleware from "../Middlewares/validateSchemaMiddleware.js";
 import postSchema from "../Schemas/postSchema.js";
@@ -14,5 +14,6 @@ postsRouter.get("/user/:userId", listPostByUserId);
 postsRouter.get("/posts/:hashtag", listPostByHashtag);
 postsRouter.put("/posts/:postId", validateSchemaMiddleware(postSchema), editPost);
 postsRouter.delete("/post/delete/:postId", deletePost);
+postsRouter.get("/users/search", searchUsers);
 
 export default postsRouter;
