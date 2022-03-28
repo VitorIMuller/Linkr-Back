@@ -61,6 +61,7 @@ export async function listPostByUserId(req, res) {
 
     try {
         const result = await postsRepository.postsByUserId(userId);
+        console.log(result.rows)
 
         if (result.rowCount === 0) {
             return res.sendStatus(404);
