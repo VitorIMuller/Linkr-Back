@@ -68,7 +68,7 @@ async function deletePostLike(postId) {
         FROM
             likes
         WHERE
-            "postId" = $1
+            "postsId" = $1
     `, [postId]);
 }
 
