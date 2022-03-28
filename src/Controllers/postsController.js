@@ -128,7 +128,7 @@ export async function editPost(req,res){
 
 export async function searchUsers(req, res){
     let {characters} = req.query;
-    const minCharacters = 3;
+    const minCharacters = 0;
 
     if (characters.length < minCharacters) return res.sendStatus(400);
     characters += '%';
