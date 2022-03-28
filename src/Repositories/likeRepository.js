@@ -30,6 +30,26 @@ async function getPostTotalLikes(postId) {
     `, [postId]);
 }
 
+async function getPostUsernameLikes(postId, userId) {
+    return connection.query(`
+        SELECT
+            u.name
+        FROM
+            likes l
+        LEFT JOIN
+            users u
+                ON u.id = l."userId"
+        LEFT JOIN
+            posts p
+                ON p.id = l."postsId"
+        WHERE
+            l."postsId" = $1
+            AND l."userId" != $2
+        ORDER BY l."userId" ASC
+        LIMIT 2
+    `, [postId, userId]);
+}
+
 async function getUserLikes(userId, postId) {
     return connection.query(`
         SELECT
@@ -42,4 +62,21 @@ async function getUserLikes(userId, postId) {
     `, [userId, postId]);
 }
 
-export const likeRepository = { insertLike, deleteLike, getPostTotalLikes, getUserLikes };
+async function deletePostLike(postId) {
+    return connection.query(`
+        DELETE
+        FROM
+            likes
+        WHERE
+            "postsId" = $1
+    `, [postId]);
+}
+
+export const likeRepository = {
+    insertLike,
+    deleteLike,
+    getPostTotalLikes,
+    getPostUsernameLikes,
+    getUserLikes,
+    deletePostLike
+};

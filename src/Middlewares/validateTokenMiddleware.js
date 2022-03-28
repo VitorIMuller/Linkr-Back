@@ -16,7 +16,6 @@ export async function validateTokenMiddleware(req, res, next) {
   if (!user) {
     return res.sendStatus(401);
   }
-
   res.locals.user = user;
   next();
 }

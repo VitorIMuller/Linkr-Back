@@ -1,5 +1,7 @@
 import { postsRepository } from "../Repositories/postsRepository.js";
 import urlMetadata from "url-metadata";
+import { likeRepository } from "../Repositories/likeRepository.js";
+import { hashtagRepository } from "../Repositories/trendingRepository.js";
 
 export async function listPosts(req, res) {
     const { limit } = req.params;
@@ -61,7 +63,6 @@ export async function listPostByUserId(req, res) {
 
     try {
         const result = await postsRepository.postsByUserId(userId);
-        console.log(result.rows)
 
         if (result.rowCount === 0) {
             return res.sendStatus(404);
@@ -84,9 +85,76 @@ export async function listPostByHashtag(req, res) {
         }
         res.status(200).send(posts);
     } catch (error) {
-        console.log(hashtag)
         console.log(error);
         res.status(500).send(error);
     }
 }
 
+async function addHashtag(userMessage, postId) {
+    const pattern = /(^|\B)#(?![0-9_]+\b)([a-zA-Z0-9_]{1,30})(\b|\r)/g;
+    const words = userMessage.split(' ');
+    const filteredHastags = words.filter(word => pattern.test(word));
+    const hashtags = filteredHastags.map(tag => tag.split('#')[1]);
+
+    hashtags.map(async tag => {
+        const { rows: [hashtag] } = await postsRepository.verifyExistingTag(tag);
+
+        if (!hashtag) {
+            const { rows: [insertion] } = await postsRepository.insertHashtags(tag);
+            await postsRepository.matchHashToPost(postId, insertion.id);
+        } else {
+            await postsRepository.matchHashToPost(postId, hashtag.id);
+        }
+    })
+
+}
+
+export async function editPost(req, res) {
+    const { postId } = req.params;
+    const { url, userMessage } = req.body;
+    const { id: userId } = res.locals.user;
+
+    try {
+        const { rows: data } = await postsRepository.searchUserId(postId);
+        if (data[0].userId !== userId) return res.sendStatus(401);
+
+        const result = await postsRepository.editPost(postId, userId, userMessage);
+        addHashtag(userMessage, postId);
+        res.status(200).send(result);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+}
+
+
+export async function deletePost(req, res) {
+    const { postId } = req.params;
+
+    try {
+        await likeRepository.deletePostLike(postId);
+        await hashtagRepository.deletePostHash(postId);
+        await postsRepository.deletePost(postId);
+
+        res.status(200).send("Post deleted");
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+}
+
+export async function searchUsers(req, res) {
+    let { characters } = req.query;
+    const minCharacters = 0;
+
+    if (characters.length < minCharacters) return res.sendStatus(400);
+    characters += '%';
+    try {
+        const { rows: users } = await postsRepository.searchUsersByName(characters);
+        res.status(200).send(users);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+}

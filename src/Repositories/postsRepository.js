@@ -78,6 +78,51 @@ async function getPostsByTag(hashtag) {
     return posts
 };
 
+async function editPost(postId, userId, userMessage) {
+    return connection.query(`   
+    UPDATE posts
+	    SET  "userMessage"=$1 
+	    WHERE posts.id = $2 AND "userId"=$3
+    `, [userMessage, postId, userId]);
+}
 
+async function searchUserId(postId) {
+    return connection.query(`   
+    SELECT 
+	    posts."userId"
+    FROM posts
+	    WHERE posts.id=$1
+    `, [postId]);
+}
 
-export const postsRepository = { allPosts, publishPost, postsByUserId, verifyExistingTag, insertHashtags, matchHashToPost, getPostsByTag }
+async function deletePost(postId) {
+    return connection.query(`
+        DELETE
+        FROM
+            posts
+        WHERE
+            id = $1
+    `, [postId]);
+}
+
+async function searchUsersByName(characters) {
+    return connection.query(`   
+    SELECT id, name, image
+    FROM users
+        WHERE name ILIKE $1
+    `, [characters]);
+}
+
+export const postsRepository = {
+    allPosts,
+    publishPost,
+    postsByUserId,
+    getPostsByTag,
+    verifyExistingTag,
+    insertHashtags,
+    matchHashToPost,
+    editPost,
+    searchUserId,
+    searchUsersByName,
+    deletePost
+}
