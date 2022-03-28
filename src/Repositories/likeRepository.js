@@ -62,4 +62,21 @@ async function getUserLikes(userId, postId) {
     `, [userId, postId]);
 }
 
-export const likeRepository = { insertLike, deleteLike, getPostTotalLikes, getPostUsernameLikes, getUserLikes };
+async function deletePostLike(postId) {
+    return connection.query(`
+        DELETE
+        FROM
+            likes
+        WHERE
+            "postsId" = $1
+    `, [postId]);
+}
+
+export const likeRepository = {
+    insertLike,
+    deleteLike,
+    getPostTotalLikes,
+    getPostUsernameLikes,
+    getUserLikes,
+    deletePostLike
+};
