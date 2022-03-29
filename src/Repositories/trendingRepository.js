@@ -2,7 +2,7 @@ import connection from "../database.js"
 
 export async function trending(limit) {
   return await connection.query(`
-    SELECT hashtags.tag AS hashtag, COUNT("hashtagId") AS frequency FROM hashtagpost 
+    SELECT hashtags.tag AS hashtag, COUNT("hashtagId") AS frequency FROM "hashtagPost" 
       JOIN hashtags ON "hashtagId"=hashtags.id 
       JOIN posts ON "postId"=posts.id 
     WHERE posts.time > now() - interval '1 day' 
@@ -16,7 +16,7 @@ async function deletePostHash(postId) {
   return connection.query(`
         DELETE
         FROM
-            hashtagpost
+            "hashtagPost"
         WHERE
             "postId" = $1
     `, [postId]);
