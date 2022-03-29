@@ -57,7 +57,7 @@ async function insertHashtags(tag) {
 async function matchHashToPost(postId, hashtagId) {
     return connection.query(`
         INSERT INTO
-            hashtagpost ("postId", "hashtagId")
+            "hashtagPost" ("postId", "hashtagId")
         VALUES ($1, $2)
     `, [parseInt(postId), parseInt(hashtagId)]);
 }
@@ -66,8 +66,8 @@ async function getPostsByTag(hashtag) {
     const { rows: posts } = await connection.query(`
     SELECT users.id AS "userId", users.name, users.image, posts.*
         FROM posts
-        JOIN hashtagPost ON hashtagPost."postId" = posts.id
-        JOIN hashtags ON hashtags.id = hashtagPost."hashtagId"
+        JOIN "hashtagPost" ON "hashtagPost"."postId" = posts.id
+        JOIN hashtags ON hashtags.id = "hashtagPost"."hashtagId"
         JOIN users ON users.id = posts."userId"
         WHERE hashtags.tag = $1
         ORDER BY posts.id DESC
