@@ -2,8 +2,8 @@ import connection from "../database.js";
 
 async function insertLike(userId, postId) {
     return connection.query(`
-        INSERT  INTO
-            likes ("userId", "postsId")
+        INSERT INTO
+            likes ("userId", "postId")
         VALUES 
             ($1, $2)
     `, [userId, postId]);
@@ -11,11 +11,12 @@ async function insertLike(userId, postId) {
 
 async function deleteLike(userId, postId) {
     return connection.query(`
-        DELETE FROM 
+        DELETE
+        FROM 
             likes
         WHERE 
             "userId" = $1
-            AND "postsId" = $2
+            AND "postId" = $2
     `, [userId, postId]);
 }
 
@@ -26,7 +27,7 @@ async function getPostTotalLikes(postId) {
         FROM
             likes
         WHERE
-            "postsId" = $1
+            "postId" = $1
     `, [postId]);
 }
 
@@ -41,9 +42,9 @@ async function getPostUsernameLikes(postId, userId) {
                 ON u.id = l."userId"
         LEFT JOIN
             posts p
-                ON p.id = l."postsId"
+                ON p.id = l."postId"
         WHERE
-            l."postsId" = $1
+            l."postId" = $1
             AND l."userId" != $2
         ORDER BY l."userId" ASC
         LIMIT 2
@@ -58,7 +59,7 @@ async function getUserLikes(userId, postId) {
             likes
         WHERE
             "userId" = $1
-            AND "postsId" = $2
+            AND "postId" = $2
     `, [userId, postId]);
 }
 
@@ -68,7 +69,7 @@ async function deletePostLike(postId) {
         FROM
             likes
         WHERE
-            "postsId" = $1
+            "postId" = $1
     `, [postId]);
 }
 
