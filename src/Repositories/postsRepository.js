@@ -2,26 +2,28 @@ import connection from "../database.js";
 
 async function allPosts(limit, userId) {
     return connection.query(`
-        SELECT 
+        SELECT
             p.*,
             u.name,
             u.image AS "profilePic"
-        FROM 
+        FROM
             posts p
         LEFT JOIN
             users u
                 ON u.id = p."userId"
-        LEFT JOIN
+        JOIN
             follows f
                 ON f."followedId" = p."userId"
-        WHERE f."userId" = $1
+        WHERE 
+            p."userId" = $1
+            OR f."userId" = $1
         ORDER BY
             p.time DESC LIMIT $2
     `, [userId, limit]);
 }
 
 async function publishPost(userId, userMessage, url, urlTitle, urlDescription, urlImage) {
-    return connection.query(`   
+    return connection.query(`
     INSERT INTO
         posts ("userId", "userMessage", url, "urlTitle", "urlDescription", "urlImage")
     VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
