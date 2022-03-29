@@ -1,6 +1,6 @@
 import connection from "../database.js";
 
-async function allPosts(limit) {
+async function allPosts(limit, userId) {
     return connection.query(`
         SELECT 
             p.*,
@@ -11,9 +11,13 @@ async function allPosts(limit) {
         LEFT JOIN
             users u
                 ON u.id = p."userId"
+        LEFT JOIN
+            follows f
+                ON f."followedId" = p."userId"
+        WHERE f."userId" = $1
         ORDER BY
-            p.time DESC LIMIT $1
-    `, [limit]);
+            p.time DESC LIMIT $2
+    `, [userId, limit]);
 }
 
 async function publishPost(userId, userMessage, url, urlTitle, urlDescription, urlImage) {
