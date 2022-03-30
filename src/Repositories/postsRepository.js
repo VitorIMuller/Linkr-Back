@@ -2,11 +2,11 @@ import connection from "../database.js";
 
 async function allPosts(limit, userId) {
     return connection.query(`
-        SELECT 
+        SELECT
             p.*,
             u.name,
             u.image AS "profilePic"
-        FROM 
+        FROM
             posts p
         LEFT JOIN
             users u
@@ -21,7 +21,7 @@ async function allPosts(limit, userId) {
 }
 
 async function publishPost(userId, userMessage, url, urlTitle, urlDescription, urlImage) {
-    return connection.query(`   
+    return connection.query(`
     INSERT INTO
         posts ("userId", "userMessage", url, "urlTitle", "urlDescription", "urlImage")
     VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
