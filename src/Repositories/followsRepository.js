@@ -7,6 +7,12 @@ export async function followStatus(userId, followedId) {
   `, [userId, followedId])
 }
 
+export async function verifyUser(userId) {
+  return await connection.query(`
+    SELECT * FROM users WHERE users.id=$1
+  `, [userId])
+}
+
 export async function follow(userId, followedId) {
   return await connection.query(`
     INSERT INTO follows ("userId", "followedId")
