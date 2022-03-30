@@ -11,12 +11,10 @@ async function allPosts(limit, userId) {
         LEFT JOIN
             users u
                 ON u.id = p."userId"
-        JOIN
+        LEFT JOIN
             follows f
                 ON f."followedId" = p."userId"
-        WHERE 
-            p."userId" = $1
-            OR f."userId" = $1
+        WHERE f."userId" = $1
         ORDER BY
             p.time DESC LIMIT $2
     `, [userId, limit]);
