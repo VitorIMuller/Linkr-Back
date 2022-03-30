@@ -1,4 +1,4 @@
-import { createComment, listComments } from "../Repositories/commentsRepository.js";
+import { createComment, listComments, listFollows, numberComments } from "../Repositories/commentsRepository.js";
 
 
 export async function postComment(req, res) {
@@ -15,11 +15,24 @@ export async function postComment(req, res) {
 
 export async function getComments(req, res) {
     const id = req.params.postId
+    const userId = res.locals.user
     try {
-        const comments = await listComments(id)
+        const comments = await listComments(id, userId.id);
 
+        console.log(comments)
+        res.send(comments)
+    } catch (error) {
+        console.log(error.message)
+        return res.sendStatus(500);
+    }
+}
 
-        return res.send(comments)
+export async function commentsCounter(req, res) {
+    const id = req.params.postId
+    try {
+        const comments = await numberComments(id)
+        const counter = comments.toString()
+        return res.status(200).send(counter);
     } catch (error) {
         console.log(error.message)
         return res.sendStatus(500);
