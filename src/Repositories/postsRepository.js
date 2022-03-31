@@ -13,6 +13,7 @@ async function allPosts(limit, userId) {
         JOIN follows f
             ON f."followedId" = p."userId"
         WHERE f."userId" = $1
+
         LIMIT $2
     `, [userId, limit]);
 }
@@ -40,8 +41,6 @@ async function allReposts(limit, userId) {
             WHERE
                 f."userId" = $1
         )
-        ORDER BY
-            r.id DESC
         LIMIT $2
     `, [userId, limit]);
 }
