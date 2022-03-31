@@ -2,22 +2,60 @@ import connection from "../database.js";
 
 async function allPosts(limit, userId) {
     return connection.query(`
-        SELECT
+        SELECT 
             p.*,
             u.name,
-            u.image AS "profilePic"
-        FROM
-            posts p
-        LEFT JOIN
-            users u
-                ON u.id = p."userId"
-        LEFT JOIN
-            follows f
-                ON f."followedId" = p."userId"
+            u.image AS "profilePic",
+            p.time AS "timestamp"
+        FROM posts p
+        JOIN users u
+            ON u.id = p."userId"
+        JOIN follows f
+            ON f."followedId" = p."userId"
         WHERE f."userId" = $1
-        ORDER BY
-            p.time DESC LIMIT $2
+        LIMIT $2
     `, [userId, limit]);
+}
+
+async function allReposts(limit, userId) {
+    return connection.query(`
+        SELECT 
+            p.*,
+            postUser.name,
+            postUser.image AS "profilePic",
+            repostUser.name AS "repostedBy"
+        FROM repost r
+        JOIN posts p
+            ON p.id = r."postId"
+        JOIN users postUser
+            ON postUser.id = p."userId"
+        JOIN users repostUser
+            ON repostUser.id = r."userId"
+        WHERE r."userId" IN (
+            SELECT
+                f."followedId"
+            FROM repost r
+            JOIN follows f
+                ON f."followedId" = r."userId"
+            WHERE
+                f."userId" = $1
+        )
+        ORDER BY
+            r.id DESC
+        LIMIT $2
+    `, [userId, limit]);
+}
+
+async function repostCount() {
+    return connection.query(`
+        SELECT
+            r."postId",
+            COUNT(r."postId")
+        FROM
+            repost r
+        GROUP BY
+            r."postId"
+    `);
 }
 
 async function publishPost(userId, userMessage, url, urlTitle, urlDescription, urlImage) {
@@ -30,15 +68,17 @@ async function publishPost(userId, userMessage, url, urlTitle, urlDescription, u
 
 async function postsByUserId(userId) {
     return connection.query(`
-        SELECT 
+        SELECT
             p.*,
             u.name AS username,
             u.image AS "profilePic"
-        FROM 
+        FROM
             posts p
         LEFT JOIN users u
             ON p."userId" = u.id
-        WHERE "userId"=$1
+        WHERE p."userId"=$1
+        GROUP BY
+            p.id, u.name, u.image
         ORDER BY
             p.time DESC
     `, [userId]);
@@ -74,6 +114,8 @@ async function getPostsByTag(hashtag) {
         JOIN hashtags ON hashtags.id = "hashtagPost"."hashtagId"
         JOIN users ON users.id = posts."userId"
         WHERE hashtags.tag = $1
+        GROUP BY
+            posts.id, users.name, users.image, users.id
         ORDER BY posts.id DESC
         LIMIT 20
         
@@ -117,6 +159,14 @@ async function searchUsersByName(characters) {
     `, [characters]);
 }
 
+async function repost(userId, postId) {
+    return connection.query(`
+        INSERT INTO
+            repost ("userId", "postId")
+        VALUES ($1, $2)
+    `, [userId, postId]);
+}
+
 export const postsRepository = {
     allPosts,
     publishPost,
@@ -128,5 +178,8 @@ export const postsRepository = {
     editPost,
     searchUserId,
     searchUsersByName,
-    deletePost
+    deletePost,
+    repost,
+    allReposts,
+    repostCount
 }
