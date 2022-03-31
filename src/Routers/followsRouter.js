@@ -6,9 +6,9 @@ const followsRouter = Router();
 
 followsRouter.use(validateTokenMiddleware);
 
-followsRouter.get("/follows/:userId", isFollowing);
-followsRouter.get('/follows/:loggedUser/:userToVerify', getFollowStatus);
-followsRouter.post('/follows/:loggedUser/:userToHandle', handleFollow);
+followsRouter.get("/following/:userId", isFollowing);
+followsRouter.get('/follows/:userToVerify', getFollowStatus);
+followsRouter.post('/follows/:userToHandle', handleFollow);
 
 
 export default followsRouter;
