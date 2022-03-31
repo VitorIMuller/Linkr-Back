@@ -18,8 +18,6 @@ export async function getComments(req, res) {
     const userId = res.locals.user
     try {
         const comments = await listComments(id, userId.id);
-
-        console.log(comments)
         res.send(comments)
     } catch (error) {
         console.log(error.message)

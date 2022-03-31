@@ -9,12 +9,11 @@ export async function createComment(text, postId, userId) {
 export async function listComments(id, userId) {
     const { rows: comments } = await connection.query(`
         SELECT 
-            c.*, f."followedId" AS "followedId", u.name AS username, u.image AS image
+            c.*, u.name AS username, u.image AS image
             FROM
             comments c
             JOIN
             users u ON u.id= c."userId"
-            LEFT JOIN follows f ON f."userId" = c."userId"
         WHERE
             "postId"=$1
     `, [parseInt(id)])

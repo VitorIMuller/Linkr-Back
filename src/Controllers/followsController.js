@@ -2,6 +2,7 @@ import { followStatus, follow, unfollow, followsRepository } from "../Repositori
 
 export async function isFollowing(req, res) {
   const { userId } = req.params;
+  console.log(userId)
 
   try {
     const result = await followsRepository.isFollowing(userId);

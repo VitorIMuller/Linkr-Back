@@ -10,4 +10,5 @@ followsRouter.get("/follows/:userId", isFollowing);
 followsRouter.get('/follows/:loggedUser/:userToVerify', getFollowStatus);
 followsRouter.post('/follows/:loggedUser/:userToHandle', handleFollow);
 
+
 export default followsRouter;
