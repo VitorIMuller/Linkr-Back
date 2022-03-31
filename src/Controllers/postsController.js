@@ -17,7 +17,7 @@ export async function listPosts(req, res) {
         res.status(200).send(result.rows);
     } catch (error) {
         console.log(error);
-        res.status(500).send(error);
+        res.sendStatus(500);
     }
 }
 
@@ -145,17 +145,3 @@ export async function deletePost(req, res) {
     }
 }
 
-export async function searchUsers(req, res) {
-    let { characters } = req.query;
-    const minCharacters = 0;
-
-    if (characters.length < minCharacters) return res.sendStatus(400);
-    characters += '%';
-    try {
-        const { rows: users } = await postsRepository.searchUsersByName(characters);
-        res.status(200).send(users);
-    } catch (error) {
-        console.log(error);
-        res.status(500).send(error);
-    }
-}
