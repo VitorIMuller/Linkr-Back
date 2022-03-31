@@ -1,4 +1,4 @@
-import { followStatus, follow, unfollow, followsRepository } from "../Repositories/followsRepository.js";
+import { followStatus, verifyUser, follow, unfollow, followsRepository } from "../Repositories/followsRepository.js";
 
 export async function isFollowing(req, res) {
   const { userId } = req.params;
@@ -18,15 +18,17 @@ export async function isFollowing(req, res) {
 }
 
 export async function getFollowStatus(req, res) {
-  const loggedUserId = req.params['loggedUser'];
+  const loggedUserId = res.locals.user.id;
   const userToVerifyId = req.params['userToVerify'];
 
   try {
     if (loggedUserId === userToVerifyId) return res.send(false);
 
-    const { rows: [follows] } = await followStatus(loggedUserId, userToVerifyId);
+    const { rows: [userExists]} = await verifyUser(userToVerifyId);
+    if(!userExists) return res.sendStatus(404);
 
-    if (follows) return res.send(true);
+    const { rows: [follows] } = await followStatus(loggedUserId, userToVerifyId);
+    if ( follows ) return res.send(true);
 
     return res.send(false);
 
@@ -37,11 +39,14 @@ export async function getFollowStatus(req, res) {
 }
 
 export async function handleFollow(req, res) {
-  const loggedUserId = req.params['loggedUser'];
+  const loggedUserId = res.locals.user.id;
   const userToHandleId = req.params['userToHandle'];
 
   try {
     if (loggedUserId === userToHandleId) return res.sendStatus(409);
+
+    const { rows: [userExists]} = await verifyUser(userToHandleId);
+    if(!userExists) return res.sendStatus(404);
 
     const { rows: [follows] } = await followStatus(loggedUserId, userToHandleId);
 
