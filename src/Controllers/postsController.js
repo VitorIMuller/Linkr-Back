@@ -5,13 +5,14 @@ import { hashtagRepository } from "../Repositories/trendingRepository.js";
 
 export async function listPosts(req, res) {
     const { limit } = req.params;
+    const { offset } = req.params;
     const user = res.locals.user;
 
     try {
-        const result = await postsRepository.allPosts(limit, user.id);
+        const result = await postsRepository.allPosts(limit, user.id, offset);
 
         if (result.rowCount === 0) {
-            return res.sendStatus(404);
+            return res.send([]);
         }
 
         res.status(200).send(result.rows);

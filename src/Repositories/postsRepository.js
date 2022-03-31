@@ -1,6 +1,6 @@
 import connection from "../database.js";
 
-async function allPosts(limit, userId) {
+async function allPosts(limit, userId, offset) {
     return connection.query(`
         SELECT
             p.*,
@@ -17,7 +17,8 @@ async function allPosts(limit, userId) {
         WHERE f."userId" = $1
         ORDER BY
             p.time DESC LIMIT $2
-    `, [userId, limit]);
+        OFFSET $3
+    `, [userId, limit, offset]);
 }
 
 async function publishPost(userId, userMessage, url, urlTitle, urlDescription, urlImage) {

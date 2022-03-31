@@ -9,7 +9,7 @@ const postsRouter = express.Router();
 postsRouter.use(validateTokenMiddleware);
 
 postsRouter.post("/posts", validateSchemaMiddleware(postSchema), createPosts);
-postsRouter.get("/posts/:limit", listPosts);
+postsRouter.get("/posts/:limit/:offset", listPosts);
 postsRouter.get("/user/:userId", listPostByUserId);
 postsRouter.get("/posts/hashtag/:hashtag", listPostByHashtag);
 postsRouter.put("/posts/:postId", validateSchemaMiddleware(postSchema), editPost);
