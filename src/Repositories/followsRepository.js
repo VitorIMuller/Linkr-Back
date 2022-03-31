@@ -1,5 +1,16 @@
 import connection from "../database.js";
 
+async function isFollowing(userId) {
+  return connection.query(`
+      SELECT
+          *
+      FROM
+          follows f
+      WHERE
+          f."userId" = $1
+  `, [userId])
+}
+
 export async function followStatus(userId, followedId) {
   return await connection.query(`
     SELECT * FROM follows
@@ -24,4 +35,8 @@ export async function unfollow(followsId) {
   return await connection.query(`
     DELETE FROM follows WHERE follows.id = $1
   `, [followsId])
+}
+
+export const followsRepository = {
+  isFollowing
 }
