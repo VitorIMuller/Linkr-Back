@@ -1,5 +1,5 @@
 import express from "express";
-import { createPosts, deletePost, editPost, listPostByHashtag, listPostByUserId, listPosts, listReposts, repost, repostCount, searchUsers } from "../Controllers/postsController.js";
+import { createPosts, deletePost, editPost, listPostByHashtag, listPostByUserId, listPosts, repost, searchUsers } from "../Controllers/postsController.js";
 import { validateTokenMiddleware } from "../Middlewares/validateTokenMiddleware.js"
 import validateSchemaMiddleware from "../Middlewares/validateSchemaMiddleware.js";
 import postSchema from "../Schemas/postSchema.js";
