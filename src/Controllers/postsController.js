@@ -8,11 +8,38 @@ export async function listPosts(req, res) {
     const user = res.locals.user;
 
     try {
-        const result = await postsRepository.allPosts(limit, user.id);
+        const { rows: posts } = await postsRepository.allPosts(limit, user.id);
+        //const { rows: reposts } = await postsRepository.allReposts(limit, user.id);
+        const { rows: repostsCount } = await postsRepository.repostCount();
 
-        if (result.rowCount === 0) {
-            return res.sendStatus(404);
+        const body = {
+            posts, repostsCount
         }
+
+        res.status(200).send(body);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
+export async function listReposts(req, res) {
+    const { limit } = req.params;
+    const { username } = req.body;
+
+    try {
+        const result = await postsRepository.allReposts(limit, username);
+
+        res.status(200).send(result.rows);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
+export async function repostCount(req, res) {
+    try {
+        const result = await postsRepository.repostCount();
 
         res.status(200).send(result.rows);
     } catch (error) {
@@ -145,3 +172,34 @@ export async function deletePost(req, res) {
     }
 }
 
+export async function searchUsers(req, res) {
+    let { characters } = req.query;
+    const minCharacters = 0;
+
+    if (characters.length < minCharacters) return res.sendStatus(400);
+    characters += '%';
+    try {
+        const { rows: users } = await postsRepository.searchUsersByName(characters);
+        res.status(200).send(users);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+}
+
+export async function reposts(req, res) {
+    const user = res.locals.user;
+    const userId = user.id;
+    const { postId } = req.params;
+
+    try {
+
+        await postsRepository.reposts(userId, postId);
+
+        res.status(200).send("Reposted");
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+}
