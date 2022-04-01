@@ -22,7 +22,7 @@ export async function getFollowStatus(req, res) {
   const userToVerifyId = req.params['userToVerify'];
 
   try {
-    if (loggedUserId === userToVerifyId) return res.send(false);
+    if (loggedUserId == userToVerifyId) return res.send(false);
 
     const { rows: [userExists] } = await verifyUser(userToVerifyId);
     if (!userExists) return res.sendStatus(404);
@@ -43,7 +43,7 @@ export async function handleFollow(req, res) {
   const userToHandleId = req.params['userToHandle'];
 
   try {
-    if (loggedUserId === userToHandleId) return res.sendStatus(409);
+    if (loggedUserId == userToHandleId) return res.sendStatus(409);
 
     const { rows: [userExists] } = await verifyUser(userToHandleId);
     if (!userExists) return res.sendStatus(404);

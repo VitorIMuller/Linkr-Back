@@ -9,7 +9,7 @@ async function searchUsersByName(characters) {
     `, [characters]);
 }
 
-async function searchFollowed(userId, characters){
+async function searchFollowed(userId, characters) {
     characters += '%';
     return connection.query(`   
     SELECT 	
@@ -21,7 +21,19 @@ async function searchFollowed(userId, characters){
     `, [userId, characters]);
 }
 
-export const usersRepository= {
+async function getUserInfo(userId) {
+    return connection.query(`
+        SELECT
+            u.name,
+            u.image
+        FROM users u
+        WHERE
+            u.id = $1
+    `, [userId]);
+}
+
+export const usersRepository = {
     searchUsersByName,
     searchFollowed,
+    getUserInfo
 } 
