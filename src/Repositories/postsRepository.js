@@ -194,6 +194,17 @@ async function reposts(userId, postId) {
     `, [userId, postId]);
 }
 
+async function repostedAlready(userId, postId) {
+    return connection.query(`
+        SELECT
+            *
+        FROM reposts r
+        WHERE
+            r."userId" = $1
+            AND r."postId" = $2
+    `, [userId, postId]);
+}
+
 export const postsRepository = {
     allPosts,
     publishPost,
@@ -208,5 +219,6 @@ export const postsRepository = {
     deletePost,
     reposts,
     repostCount,
-    deleteRepost
+    deleteRepost,
+    repostedAlready
 }

@@ -219,10 +219,13 @@ export async function reposts(req, res) {
     const { postId } = req.params;
 
     try {
+        const isRepostedAlready = await postsRepository.repostedAlready(userId, postId);
+
+        if (isRepostedAlready.rowCount !== 0) {
+            return res.status(409).send("You've already reposted this!");
+        }
         await postsRepository.reposts(userId, postId);
-
         res.status(200).send("Reposted");
-
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
