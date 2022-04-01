@@ -3,7 +3,6 @@ import { createComment, listComments, listFollows, numberComments } from "../Rep
 
 export async function postComment(req, res) {
     const { text, postId, userId } = req.body
-    console.log(userId)
     try {
         await createComment(text, postId, userId);
         return res.sendStatus(201);

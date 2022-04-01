@@ -1,31 +1,32 @@
 import connection from "../database.js";
 
+// async function allPosts(limit, userId) {
+//     return connection.query(`
+//         SELECT 
+//             p.*,
+//             u.name,
+//             u.image AS "profilePic",
+//             p.time AS "timestamp"
+//         FROM posts p
+//         JOIN users u
+//             ON u.id = p."userId"
+//         JOIN follows f
+//             ON f."followedId" = p."userId"
+//         WHERE f."userId" = $1
+
+//         LIMIT $2
+//     `, [userId, limit]);
+// }
+
 async function allPosts(limit, userId) {
     return connection.query(`
-        SELECT 
-            p.*,
-            u.name,
-            u.image AS "profilePic",
-            p.time AS "timestamp"
-        FROM posts p
-        JOIN users u
-            ON u.id = p."userId"
-        JOIN follows f
-            ON f."followedId" = p."userId"
-        WHERE f."userId" = $1
-
-        LIMIT $2
-    `, [userId, limit]);
-}
-
-async function allReposts(limit, userId) {
-    return connection.query(`
-        SELECT 
-            p.*,
+        SELECT  
+            p.id, p."userMessage", p.url, p."userId", p."urlTitle", p."urlDescription", p."urlImage",
+            r."createdAt" AS time,
             postUser.name,
             postUser.image AS "profilePic",
             repostUser.name AS "repostedBy"
-        FROM repost r
+        FROM reposts r
         JOIN posts p
             ON p.id = r."postId"
         JOIN users postUser
@@ -35,12 +36,26 @@ async function allReposts(limit, userId) {
         WHERE r."userId" IN (
             SELECT
                 f."followedId"
-            FROM repost r
+            FROM reposts r
             JOIN follows f
                 ON f."followedId" = r."userId"
             WHERE
                 f."userId" = $1
         )
+        UNION
+        SELECT 
+            p.id, p."userMessage", p.url, p."userId", p."urlTitle", p."urlDescription", p."urlImage",
+	        p.time,
+            u.name,
+            u.image AS "profilePic",
+            NULL
+        FROM posts p
+        LEFT JOIN users u
+            ON u.id = p."userId"
+        LEFT JOIN follows f
+            ON f."followedId" = p."userId"
+        WHERE f."userId" = $1
+        ORDER BY time DESC
         LIMIT $2
     `, [userId, limit]);
 }
@@ -51,7 +66,7 @@ async function repostCount() {
             r."postId",
             COUNT(r."postId")
         FROM
-            repost r
+            reposts r
         GROUP BY
             r."postId"
     `);
@@ -158,10 +173,10 @@ async function searchUsersByName(characters) {
     `, [characters]);
 }
 
-async function repost(userId, postId) {
+async function reposts(userId, postId) {
     return connection.query(`
         INSERT INTO
-            repost ("userId", "postId")
+            reposts ("userId", "postId")
         VALUES ($1, $2)
     `, [userId, postId]);
 }
@@ -178,7 +193,7 @@ export const postsRepository = {
     searchUserId,
     searchUsersByName,
     deletePost,
-    repost,
-    allReposts,
+    reposts,
+    //allReposts,
     repostCount
 }

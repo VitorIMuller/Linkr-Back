@@ -9,13 +9,11 @@ export async function listPosts(req, res) {
 
     try {
         const { rows: posts } = await postsRepository.allPosts(limit, user.id);
-        const { rows: reposts } = await postsRepository.allReposts(limit, user.id);
+        //const { rows: reposts } = await postsRepository.allReposts(limit, user.id);
         const { rows: repostsCount } = await postsRepository.repostCount();
 
         const body = {
-            posts,
-            reposts,
-            repostsCount
+            posts, repostsCount
         }
 
         res.status(200).send(body);
@@ -189,14 +187,14 @@ export async function searchUsers(req, res) {
     }
 }
 
-export async function repost(req, res) {
+export async function reposts(req, res) {
     const user = res.locals.user;
     const userId = user.id;
     const { postId } = req.params;
 
     try {
 
-        await postsRepository.repost(userId, postId);
+        await postsRepository.reposts(userId, postId);
 
         res.status(200).send("Reposted");
 
