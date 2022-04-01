@@ -9,7 +9,6 @@ const postsRouter = express.Router();
 postsRouter.use(validateTokenMiddleware);
 
 postsRouter.get("/user/:userId", listPostByUserId);
-postsRouter.get("/users/search", searchUsers);
 
 postsRouter.post("/posts", validateSchemaMiddleware(postSchema), createPosts);
 postsRouter.get("/posts/:limit", listPosts);
