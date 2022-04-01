@@ -64,7 +64,7 @@ async function repostCount() {
     return connection.query(`
         SELECT
             r."postId",
-            COUNT(r."postId")
+            COUNT(r."postId") AS "repostCount"
         FROM
             reposts r
         GROUP BY
@@ -165,6 +165,16 @@ async function deletePost(postId) {
     `, [postId]);
 }
 
+async function deleteRepost(postId) {
+    return connection.query(`
+        DELETE
+        FROM
+            reposts
+        WHERE
+            "postId" = $1
+    `, [postId])
+}
+
 async function searchUsersByName(characters) {
     return connection.query(`   
     SELECT id, name, image
@@ -194,6 +204,6 @@ export const postsRepository = {
     searchUsersByName,
     deletePost,
     reposts,
-    //allReposts,
-    repostCount
+    repostCount,
+    deleteRepost
 }
