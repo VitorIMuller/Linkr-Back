@@ -41,3 +41,12 @@ export async function listFollows(id) {
 
     return follows
 }
+
+export async function deletePostComments(postId) {
+    return connection.query(`
+        DELETE FROM
+            comments
+        WHERE
+            "postId" = $1
+    `, [postId]);
+}

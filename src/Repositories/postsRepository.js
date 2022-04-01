@@ -1,23 +1,23 @@
 import connection from "../database.js";
 
 async function allPosts(limit, userId, offset) {
-// async function allPosts(limit, userId) {
-//     return connection.query(`
-//         SELECT 
-//             p.*,
-//             u.name,
-//             u.image AS "profilePic",
-//             p.time AS "timestamp"
-//         FROM posts p
-//         JOIN users u
-//             ON u.id = p."userId"
-//         JOIN follows f
-//             ON f."followedId" = p."userId"
-//         WHERE f."userId" = $1
+    // async function allPosts(limit, userId) {
+    //     return connection.query(`
+    //         SELECT 
+    //             p.*,
+    //             u.name,
+    //             u.image AS "profilePic",
+    //             p.time AS "timestamp"
+    //         FROM posts p
+    //         JOIN users u
+    //             ON u.id = p."userId"
+    //         JOIN follows f
+    //             ON f."followedId" = p."userId"
+    //         WHERE f."userId" = $1
 
-//         LIMIT $2
-//     `, [userId, limit]);
-// }
+    //         LIMIT $2
+    //     `, [userId, limit]);
+    // }
 
     return connection.query(`
         SELECT  
@@ -65,7 +65,7 @@ async function repostCount() {
     return connection.query(`
         SELECT
             r."postId",
-            COUNT(r."postId")
+            COUNT(r."postId") AS "repostCount"
         FROM
             reposts r
         GROUP BY
@@ -166,6 +166,16 @@ async function deletePost(postId) {
     `, [postId]);
 }
 
+async function deleteRepost(postId) {
+    return connection.query(`
+        DELETE
+        FROM
+            reposts
+        WHERE
+            "postId" = $1
+    `, [postId])
+}
+
 async function searchUsersByName(characters) {
     return connection.query(`   
     SELECT id, name, image
@@ -195,5 +205,6 @@ export const postsRepository = {
     searchUsersByName,
     deletePost,
     reposts,
-    repostCount
+    repostCount,
+    deleteRepost
 }
