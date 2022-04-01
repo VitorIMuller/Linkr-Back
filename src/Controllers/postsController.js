@@ -6,10 +6,11 @@ import { deletePostComments } from "../Repositories/commentsRepository.js";
 
 export async function listPosts(req, res) {
     const { limit } = req.params;
+    const { offset } = req.params;
     const user = res.locals.user;
 
     try {
-        const { rows: posts } = await postsRepository.allPosts(limit, user.id);
+        const { rows: posts } = await postsRepository.allPosts(limit, user.id, offset);
         const { rows: repostsCount } = await postsRepository.repostCount();
 
         posts.forEach((post, index) => {
