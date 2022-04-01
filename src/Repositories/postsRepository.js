@@ -205,6 +205,17 @@ async function repostedAlready(userId, postId) {
     `, [userId, postId]);
 }
 
+async function getPostTotalReposts(postId) {
+    return connection.query(`
+        SELECT
+            COUNT(r."userId") AS total
+        FROM
+            reposts r
+        WHERE
+            "postId" = $1
+    `, [postId]);
+}
+
 export const postsRepository = {
     allPosts,
     publishPost,
@@ -220,5 +231,6 @@ export const postsRepository = {
     reposts,
     repostCount,
     deleteRepost,
-    repostedAlready
+    repostedAlready,
+    getPostTotalReposts
 }
