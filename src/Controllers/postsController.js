@@ -2,21 +2,29 @@ import { postsRepository } from "../Repositories/postsRepository.js";
 import urlMetadata from "url-metadata";
 import { likeRepository } from "../Repositories/likeRepository.js";
 import { hashtagRepository } from "../Repositories/trendingRepository.js";
+import { deletePostComments } from "../Repositories/commentsRepository.js";
 
 export async function listPosts(req, res) {
     const { limit } = req.params;
+    const { offset } = req.params;
     const user = res.locals.user;
 
     try {
-        const { rows: posts } = await postsRepository.allPosts(limit, user.id);
-        //const { rows: reposts } = await postsRepository.allReposts(limit, user.id);
+        const { rows: posts } = await postsRepository.allPosts(limit, user.id, offset);
         const { rows: repostsCount } = await postsRepository.repostCount();
 
-        const body = {
-            posts, repostsCount
-        }
+        posts.forEach((post, index) => {
+            repostsCount.forEach(repost => {
+                if (repost.postId === post.id) {
+                    posts[index] = { ...post, repostCount: repost.repostCount }
+                }
+            })
+            if (!posts[index].repostCount) {
+                posts[index] = { ...post, repostCount: 0 }
+            }
+        })
 
-        res.status(200).send(body);
+        res.status(200).send(posts);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -90,13 +98,21 @@ export async function listPostByUserId(req, res) {
     const { userId } = req.params;
 
     try {
-        const result = await postsRepository.postsByUserId(userId);
+        const { rows: posts } = await postsRepository.postsByUserId(userId);
+        const { rows: repostsCount } = await postsRepository.repostCount();
 
-        if (result.rowCount === 0) {
-            return res.sendStatus(404);
-        }
+        posts.forEach((post, index) => {
+            repostsCount.forEach(repost => {
+                if (repost.postId === post.id) {
+                    posts[index] = { ...post, repostCount: repost.repostCount }
+                }
+            })
+            if (!posts[index].repostCount) {
+                posts[index] = { ...post, repostCount: 0 }
+            }
+        })
 
-        res.status(200).send(result.rows);
+        res.status(200).send(posts);
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
@@ -106,11 +122,20 @@ export async function listPostByUserId(req, res) {
 export async function listPostByHashtag(req, res) {
     const { hashtag } = req.params;
     try {
-        const posts = await postsRepository.getPostsByTag(hashtag)
+        const posts = await postsRepository.getPostsByTag(hashtag);
+        const { rows: repostsCount } = await postsRepository.repostCount();
 
-        if (posts.rowCount === 0) {
-            return res.sendStatus(404);
-        }
+        posts.forEach((post, index) => {
+            repostsCount.forEach(repost => {
+                if (repost.postId === post.id) {
+                    posts[index] = { ...post, repostCount: repost.repostCount }
+                }
+            })
+            if (!posts[index].repostCount) {
+                posts[index] = { ...post, repostCount: 0 }
+            }
+        })
+
         res.status(200).send(posts);
     } catch (error) {
         console.log(error);
@@ -156,13 +181,14 @@ export async function editPost(req, res) {
     }
 }
 
-
 export async function deletePost(req, res) {
     const { postId } = req.params;
 
     try {
         await likeRepository.deletePostLike(postId);
         await hashtagRepository.deletePostHash(postId);
+        await deletePostComments(postId);
+        await postsRepository.deleteRepost(postId);
         await postsRepository.deletePost(postId);
 
         res.status(200).send("Post deleted");
@@ -193,7 +219,6 @@ export async function reposts(req, res) {
     const { postId } = req.params;
 
     try {
-
         await postsRepository.reposts(userId, postId);
 
         res.status(200).send("Reposted");
