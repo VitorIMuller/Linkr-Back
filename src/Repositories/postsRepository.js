@@ -23,16 +23,17 @@ async function allPosts(limit, userId, offset) {
         SELECT  
             p.id, p."userMessage", p.url, p."userId", p."urlTitle", p."urlDescription", p."urlImage",
             r."createdAt" AS time,
-            postUser.name,
-            postUser.image AS "profilePic",
-            repostUser.name AS "repostedBy"
+            "postUser".name,
+            "postUser".image AS "profilePic",
+            "repostUser".name AS "repostedBy",
+            "repostUser".id AS "repostedById"
         FROM reposts r
         JOIN posts p
             ON p.id = r."postId"
-        JOIN users postUser
-            ON postUser.id = p."userId"
-        JOIN users repostUser
-            ON repostUser.id = r."userId"
+        JOIN users "postUser"
+            ON "postUser".id = p."userId"
+        JOIN users "repostUser"
+            ON "repostUser".id = r."userId"
         WHERE r."userId" IN (
             SELECT
                 f."followedId"
@@ -40,7 +41,7 @@ async function allPosts(limit, userId, offset) {
             JOIN follows f
                 ON f."followedId" = r."userId"
             WHERE
-                f."userId" = $1
+                f."userId" = $1 OR r."userId" = $1
         )
         UNION
         SELECT 
@@ -48,6 +49,7 @@ async function allPosts(limit, userId, offset) {
 	        p.time,
             u.name,
             u.image AS "profilePic",
+            NULL,
             NULL
         FROM posts p
         LEFT JOIN users u
