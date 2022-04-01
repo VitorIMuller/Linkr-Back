@@ -3,7 +3,7 @@ import connection from "../database.js";
 async function isFollowing(userId) {
   return connection.query(`
       SELECT
-          *
+          id
       FROM
           follows f
       WHERE

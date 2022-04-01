@@ -2,7 +2,6 @@ import { followStatus, verifyUser, follow, unfollow, followsRepository } from ".
 
 export async function isFollowing(req, res) {
   const { userId } = req.params;
-  console.log(userId)
 
   try {
     const result = await followsRepository.isFollowing(userId);
@@ -25,11 +24,11 @@ export async function getFollowStatus(req, res) {
   try {
     if (loggedUserId === userToVerifyId) return res.send(false);
 
-    const { rows: [userExists]} = await verifyUser(userToVerifyId);
-    if(!userExists) return res.sendStatus(404);
+    const { rows: [userExists] } = await verifyUser(userToVerifyId);
+    if (!userExists) return res.sendStatus(404);
 
     const { rows: [follows] } = await followStatus(loggedUserId, userToVerifyId);
-    if ( follows ) return res.send(true);
+    if (follows) return res.send(true);
 
     return res.send(false);
 
@@ -46,8 +45,8 @@ export async function handleFollow(req, res) {
   try {
     if (loggedUserId === userToHandleId) return res.sendStatus(409);
 
-    const { rows: [userExists]} = await verifyUser(userToHandleId);
-    if(!userExists) return res.sendStatus(404);
+    const { rows: [userExists] } = await verifyUser(userToHandleId);
+    if (!userExists) return res.sendStatus(404);
 
     const { rows: [follows] } = await followStatus(loggedUserId, userToHandleId);
 
