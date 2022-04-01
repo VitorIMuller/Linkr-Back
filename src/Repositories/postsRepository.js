@@ -1,23 +1,75 @@
 import connection from "../database.js";
 
+// async function allPosts(limit, userId) {
+//     return connection.query(`
+//         SELECT 
+//             p.*,
+//             u.name,
+//             u.image AS "profilePic",
+//             p.time AS "timestamp"
+//         FROM posts p
+//         JOIN users u
+//             ON u.id = p."userId"
+//         JOIN follows f
+//             ON f."followedId" = p."userId"
+//         WHERE f."userId" = $1
+
+//         LIMIT $2
+//     `, [userId, limit]);
+// }
+
 async function allPosts(limit, userId) {
     return connection.query(`
-        SELECT
-            p.*,
+        SELECT  
+            p.id, p."userMessage", p.url, p."userId", p."urlTitle", p."urlDescription", p."urlImage",
+            r."createdAt" AS time,
+            postUser.name,
+            postUser.image AS "profilePic",
+            repostUser.name AS "repostedBy"
+        FROM reposts r
+        JOIN posts p
+            ON p.id = r."postId"
+        JOIN users postUser
+            ON postUser.id = p."userId"
+        JOIN users repostUser
+            ON repostUser.id = r."userId"
+        WHERE r."userId" IN (
+            SELECT
+                f."followedId"
+            FROM reposts r
+            JOIN follows f
+                ON f."followedId" = r."userId"
+            WHERE
+                f."userId" = $1
+        )
+        UNION
+        SELECT 
+            p.id, p."userMessage", p.url, p."userId", p."urlTitle", p."urlDescription", p."urlImage",
+	        p.time,
             u.name,
-            u.image AS "profilePic"
-        FROM
-            posts p
-        LEFT JOIN
-            users u
-                ON u.id = p."userId"
-        LEFT JOIN
-            follows f
-                ON f."followedId" = p."userId"
+            u.image AS "profilePic",
+            NULL
+        FROM posts p
+        LEFT JOIN users u
+            ON u.id = p."userId"
+        LEFT JOIN follows f
+            ON f."followedId" = p."userId"
         WHERE f."userId" = $1
-        ORDER BY
-            p.time DESC LIMIT $2
+        ORDER BY time DESC
+        LIMIT $2
     `, [userId, limit]);
+}
+
+async function repostCount() {
+    return connection.query(`
+        SELECT
+            r."postId",
+            COUNT(r."postId")
+        FROM
+            reposts r
+        GROUP BY
+            r."postId"
+    `);
 }
 
 async function publishPost(userId, userMessage, url, urlTitle, urlDescription, urlImage) {
@@ -30,15 +82,17 @@ async function publishPost(userId, userMessage, url, urlTitle, urlDescription, u
 
 async function postsByUserId(userId) {
     return connection.query(`
-        SELECT 
+        SELECT
             p.*,
             u.name AS username,
             u.image AS "profilePic"
-        FROM 
+        FROM
             posts p
         LEFT JOIN users u
             ON p."userId" = u.id
-        WHERE "userId"=$1
+        WHERE p."userId"=$1
+        GROUP BY
+            p.id, u.name, u.image
         ORDER BY
             p.time DESC
     `, [userId]);
@@ -74,6 +128,8 @@ async function getPostsByTag(hashtag) {
         JOIN hashtags ON hashtags.id = "hashtagPost"."hashtagId"
         JOIN users ON users.id = posts."userId"
         WHERE hashtags.tag = $1
+        GROUP BY
+            posts.id, users.name, users.image, users.id
         ORDER BY posts.id DESC
         LIMIT 20
         
@@ -109,6 +165,22 @@ async function deletePost(postId) {
     `, [postId]);
 }
 
+async function searchUsersByName(characters) {
+    return connection.query(`   
+    SELECT id, name, image
+    FROM users
+        WHERE name ILIKE $1
+    `, [characters]);
+}
+
+async function reposts(userId, postId) {
+    return connection.query(`
+        INSERT INTO
+            reposts ("userId", "postId")
+        VALUES ($1, $2)
+    `, [userId, postId]);
+}
+
 export const postsRepository = {
     allPosts,
     publishPost,
@@ -118,6 +190,10 @@ export const postsRepository = {
     insertHashtags,
     matchHashToPost,
     editPost,
-    searchUserId,   
-    deletePost
+    searchUserId,
+    searchUsersByName,
+    deletePost,
+    reposts,
+    //allReposts,
+    repostCount
 }
