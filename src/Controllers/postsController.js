@@ -231,3 +231,20 @@ export async function reposts(req, res) {
         res.status(500).send(error);
     }
 }
+
+export async function getTotalReposts(req, res) {
+    const { postId } = req.params;
+
+    try {
+        const reposts = await postsRepository.getPostTotalReposts(postId)
+
+        if (reposts.rowCount === 0) {
+            return res.status(404).send("Post Not Found");
+        }
+
+        res.status(200).send(reposts.rows[0].total);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+}
