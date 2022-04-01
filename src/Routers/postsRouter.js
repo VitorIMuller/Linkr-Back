@@ -11,10 +11,10 @@ postsRouter.use(validateTokenMiddleware);
 postsRouter.get("/user/:userId", listPostByUserId);
 
 postsRouter.post("/posts", validateSchemaMiddleware(postSchema), createPosts);
+postsRouter.get("/posts/get/:limit/:offset", listPosts);
 postsRouter.get("/posts/hashtag/:hashtag", listPostByHashtag);
+postsRouter.post("/posts/reposts/:postId", reposts);
+postsRouter.put("/posts/update/:postId", validateSchemaMiddleware(postSchema), editPost);
 postsRouter.delete("/post/delete/:postId", deletePost);
-postsRouter.get("/posts/:limit/:offset", listPosts);
-postsRouter.put("/posts/:postId", validateSchemaMiddleware(postSchema), editPost);
-postsRouter.post("/posts/:postId/reposts", reposts);
 
 export default postsRouter;
